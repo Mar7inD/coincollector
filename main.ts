@@ -41,7 +41,7 @@ function DoubleJumpMechanics () {
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Final, function (sprite, otherSprite) {
     if (Score == 62) {
-        game.over(true)
+        game.over(true, effects.confetti)
     }
 })
 function Coin2 () {
@@ -74,21 +74,19 @@ function Bee () {
     animation.attachAnimation(EnemyBee, AnBee)
 }
 scene.onOverlapTile(SpriteKind.Player, assets.tile`RespawnTile`, function (sprite, location) {
-    info.startCountdown(60)
+    info.startCountdown(90)
     Hero1.destroy()
     if (Hero2Active == 1) {
         Hero2.destroy()
     }
-    if (Hero2Active == 1) {
-        Hero2.destroy()
-    }
-    if (Hero1Dead == 1) {
-        info.changeLifeBy(3)
-    } else if (Hero2Dead == 1) {
-        info.changeLifeBy(3)
+    if (Hero2Active == 0) {
+        info.setLife(3)
+    } else if (Hero2Active == 1) {
+        info.setLife(6)
     }
     tiles.setTilemap(tilemap`LastMap`)
     Lives = 0
+    Score = 36
     Respawn()
     scene.cameraFollowSprite(Hero1)
     if (Hero2Active == 1) {
@@ -257,11 +255,8 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
         }
         CoinSpawner()
     } else if (Score == 36 && LevelMap == 4) {
-        info.startCountdown(60)
+        info.startCountdown(90)
         Hero1.destroy()
-        if (Hero2Active == 1) {
-            Hero2.destroy()
-        }
         if (Hero2Active == 1) {
             Hero2.destroy()
         }
@@ -283,21 +278,19 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
     }
 })
 info.onCountdownEnd(function () {
-    info.startCountdown(60)
+    info.startCountdown(90)
     Hero1.destroy()
     if (Hero2Active == 1) {
         Hero2.destroy()
     }
-    if (Hero2Active == 1) {
-        Hero2.destroy()
-    }
-    if (Hero1Dead == 1) {
-        info.changeLifeBy(3)
-    } else if (Hero2Dead == 1) {
-        info.changeLifeBy(3)
+    if (Hero2Active == 0) {
+        info.setLife(3)
+    } else if (Hero2Active == 1) {
+        info.setLife(6)
     }
     tiles.setTilemap(tilemap`LastMap`)
     Lives = 0
+    Score = 36
     Respawn()
     scene.cameraFollowSprite(Hero1)
     if (Hero2Active == 1) {
@@ -311,6 +304,7 @@ function Respawn () {
     Hero1Animation()
     Hero1Dead = 0
     DisableMulti = 0
+    HeartsRemain2Hero = 3
     if (Hero2Active == 1) {
         Hero2Appearance()
         Hero2Animation()
@@ -370,7 +364,7 @@ function Hero2Animation () {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Live, function (sprite, otherSprite) {
     if (Hero2Active == 1) {
         if (info.life() < 6) {
-            if (Hero2Dead == 0 && Hero2Dead == 0) {
+            if (Hero1Dead == 0 && Hero2Dead == 0) {
                 info.changeLifeBy(1)
                 otherSprite.destroy()
                 if (sprite == Hero2) {
@@ -379,10 +373,16 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Live, function (sprite, otherSpr
             } else if (Hero2Dead == 1 && info.life() < 3) {
                 if (HeartsRemain2Hero == 0) {
                     info.changeLifeBy(1)
+                    otherSprite.destroy()
                 }
             } else if (Hero1Dead == 1 && info.life() < 3) {
+                if (HeartsRemain2Hero == 0) {
+                    info.changeLifeBy(1)
+                    otherSprite.destroy()
+                }
                 info.changeLifeBy(1)
                 HeartsRemain2Hero += 1
+                otherSprite.destroy()
             }
         }
     } else if (Hero2Active == 0) {
@@ -424,6 +424,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Fire`, function (sprite, loca
         Hero2Dead = 1
         DisableMulti = 1
         info.changeLifeBy(-3)
+        HeartsRemain2Hero = 0
     }
     if (Hero2Active == 0) {
         if (Lives == 1) {
@@ -556,6 +557,8 @@ let AnRight2: animation.Animation = null
 let Idle1: animation.Animation = null
 let AnLeft1: animation.Animation = null
 let AnRight1: animation.Animation = null
+let Hero2Dead = 0
+let Hero1Dead = 0
 let DisableMulti = 0
 let projectile2: Sprite = null
 let Direction2 = 0
@@ -570,8 +573,6 @@ let Right1 = 0
 let LastVelocity1 = 0
 let DashActivate = 0
 let Dashing1 = false
-let Hero2Dead = 0
-let Hero1Dead = 0
 let AnBee: animation.Animation = null
 let EnemyBee: Sprite = null
 let DoubleJump = 0
@@ -592,7 +593,7 @@ Hero1Appearance()
 Hero1Animation()
 scene.cameraFollowSprite(Hero1)
 Lives = 0
-LevelMap = 1
+LevelMap = 4
 CoinSpawner()
 info.setLife(3)
 HeartsRemain2Hero = 3
