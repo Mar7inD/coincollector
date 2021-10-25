@@ -19,6 +19,16 @@ namespace SpriteKind {
     export const Live = SpriteKind.create()
 }
 function DoubleJumpMechanics () {
+    if (LevelMap == 4) {
+        if (Hero1.isHittingTile(CollisionDirection.Left) || Hero1.isHittingTile(CollisionDirection.Right)) {
+            DoubleJump1Timeout = 1
+        }
+        if (Hero2Active == 1) {
+            if (Hero2.isHittingTile(CollisionDirection.Left) || Hero2.isHittingTile(CollisionDirection.Right)) {
+                DoubleJump1Timeout = 1
+            }
+        }
+    }
     if (DoubleJump1Timeout == 3) {
         if (Hero1.isHittingTile(CollisionDirection.Bottom)) {
             DoubleJump1Timeout = 0
@@ -72,7 +82,9 @@ function Bee () {
 function Hero2Appearance () {
     Hero2 = sprites.create(assets.image`Hero2`, SpriteKind.Player)
     controller.player2.moveSprite(Hero2, 100, 0)
-    Hero2.ay = 350
+    if (LevelMap < 4) {
+        Hero2.vy = 350
+    }
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(Dashing1) && DashActivate == 1) {
@@ -166,8 +178,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
             Hero2.destroy()
             if (Hero1Dead == 1) {
                 info.changeLifeBy(3)
-            }
-            if (Hero2Dead == 1) {
+            } else if (Hero2Dead == 1) {
                 info.changeLifeBy(3)
             }
         }
@@ -186,7 +197,12 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
         if (Hero2Active == 1) {
             Hero2.destroy()
         }
-        tiles.setTilemap(tilemap`level3`)
+        if (Hero1Dead == 1) {
+            info.changeLifeBy(3)
+        } else if (Hero2Dead == 1) {
+            info.changeLifeBy(3)
+        }
+        tiles.setTilemap(tilemap`level0`)
         Lives = 0
         LevelMap += 1
         DashActivate = 1
@@ -196,6 +212,31 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
             Hero2.setPosition(Hero1.x, Hero1.y)
         }
         CoinSpawner()
+    } else if (Score >= 20 && LevelMap == 3) {
+        Hero1.destroy()
+        if (Hero2Active == 1) {
+            Hero2.destroy()
+        }
+        if (Hero2Active == 1) {
+            Hero2.destroy()
+        }
+        if (Hero1Dead == 1) {
+            info.changeLifeBy(3)
+        } else if (Hero2Dead == 1) {
+            info.changeLifeBy(3)
+        }
+        tiles.setTilemap(tilemap`level4`)
+        Lives = 0
+        LevelMap += 1
+        DashActivate = 1
+        Respawn()
+        scene.cameraFollowSprite(Hero1)
+        if (Hero2Active == 1) {
+            Hero2.setPosition(Hero1.x, Hero1.y)
+        }
+        CoinSpawner()
+    } else if (Score >= 15 && LevelMap == 4) {
+    	
     }
 })
 function Respawn () {
@@ -263,25 +304,27 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Live, function (sprite, otherSpr
     if (Hero2Active == 1) {
         if (info.life() < 6) {
             info.changeLifeBy(1)
-            Hearth.destroy()
+            otherSprite.destroy()
+            if (sprite == Hero2) {
+                HeartsRemain2Hero += 1
+            }
         }
     } else if (Hero2Active == 0) {
         if (info.life() < 3) {
             info.changeLifeBy(1)
-            Hearth.destroy()
+            otherSprite.destroy()
         }
-    }
-    if (sprite == Hero2) {
-        HeartsRemain2Hero += 1
     }
 })
 function Hero1Appearance () {
     Hero1 = sprites.create(assets.image`Hero1`, SpriteKind.Player)
     controller.moveSprite(Hero1, 100, 0)
-    Hero1.ay = 350
     for (let value of tiles.getTilesByType(assets.tile`Spawn`)) {
         tiles.placeOnTile(Hero1, value)
         tiles.setTileAt(value, assets.tile`transparency16`)
+    }
+    if (LevelMap < 4) {
+        Hero1.ay = 350
     }
 }
 function Hearth2 () {
@@ -294,14 +337,13 @@ function Hearth2 () {
     animation.attachAnimation(Hearth, AnHearth)
 }
 scene.onOverlapTile(SpriteKind.Player, assets.tile`Fire`, function (sprite, location) {
-    Lives += 1
     sprite.destroy()
+    Lives += 1
     if (sprite == Hero1 && Hero1Dead == 0) {
         scene.cameraFollowSprite(Hero2)
         Hero1Dead = 1
         info.changeLifeBy(-3)
-    }
-    if (sprite == Hero2 && Hero1Dead == 0) {
+    } else if (sprite == Hero2 && Hero2Dead == 0) {
         scene.cameraFollowSprite(Hero1)
         Hero2Dead = 1
         DisableMulti = 1
@@ -337,6 +379,22 @@ function MovementChecker () {
             animation.setAction(Hero2, ActionKind.Idle2)
         }
     }
+    if (LevelMap >= 4 && (Left1 == 1 && Hero1.isHittingTile(CollisionDirection.Left))) {
+        animation.stopAnimation(animation.AnimationTypes.All, Hero1)
+        Hero1.setImage(assets.image`Hero1LeftCatch`)
+    } else if (LevelMap >= 4 && (Hero1.isHittingTile(CollisionDirection.Right) && Right1 == 1)) {
+        animation.stopAnimation(animation.AnimationTypes.All, Hero1)
+        Hero1.setImage(assets.image`Hero1RightCatch`)
+    }
+    if (Hero2Active == 1) {
+        if (LevelMap >= 4 && (Hero2.isHittingTile(CollisionDirection.Left) && Left2 == 1)) {
+            animation.stopAnimation(animation.AnimationTypes.All, Hero2)
+            Hero2.setImage(assets.image`Hero2LeftCatch`)
+        } else if (LevelMap >= 4 && (Hero2.isHittingTile(CollisionDirection.Right) && Right2 == 1)) {
+            animation.stopAnimation(animation.AnimationTypes.All, Hero2)
+            Hero2.setImage(assets.image`Hero2LeftCatch`)
+        }
+    }
 }
 controller.player2.onButtonEvent(ControllerButton.Left, ControllerButtonEvent.Pressed, function () {
     if (Hero2Active == 1) {
@@ -344,54 +402,37 @@ controller.player2.onButtonEvent(ControllerButton.Left, ControllerButtonEvent.Pr
     }
 })
 function CoinSpawner () {
-    if (LevelMap == 1) {
-        for (let value of tiles.getTilesByType(assets.tile`CoinSpawner`)) {
-            Coin2()
-            tiles.placeOnTile(Coin, value)
-            tiles.setTileAt(value, assets.tile`transparency16`)
-        }
-    } else if (LevelMap == 2) {
-        for (let value of tiles.getTilesByType(assets.tile`CoinSpawner`)) {
-            Coin2()
-            tiles.placeOnTile(Coin, value)
-            tiles.setTileAt(value, assets.tile`transparency16`)
-        }
-        for (let value of tiles.getTilesByType(assets.tile`Danger`)) {
-            Bee()
-            tiles.placeOnTile(EnemyBee, value)
-            tiles.setTileAt(value, assets.tile`transparency16`)
-            animation.runMovementAnimation(
-            EnemyBee,
-            "c -100 0 100 0 0 0",
-            5000,
-            true
-            )
-            animation.setAction(EnemyBee, ActionKind.Bee)
-        }
-    } else if (LevelMap == 3) {
-        for (let value of tiles.getTilesByType(assets.tile`CoinSpawner`)) {
-            Coin2()
-            tiles.placeOnTile(Coin, value)
-            tiles.setTileAt(value, assets.tile`transparency16`)
-        }
-        for (let value of tiles.getTilesByType(assets.tile`Danger`)) {
-            Bee()
-            tiles.placeOnTile(EnemyBee, value)
-            tiles.setTileAt(value, assets.tile`transparency16`)
-            animation.runMovementAnimation(
-            EnemyBee,
-            "c -150 0 150 0 0 0",
-            5000,
-            true
-            )
-            animation.setAction(EnemyBee, ActionKind.Bee)
-        }
-        for (let value of tiles.getTilesByType(assets.tile`HearthSpawn`)) {
-            Hearth2()
-            tiles.placeOnTile(Hearth, value)
-            tiles.setTileAt(value, assets.tile`transparency16`)
-            animation.setAction(Hearth, ActionKind.Hearth)
-        }
+    for (let value of sprites.allOfKind(SpriteKind.Coin)) {
+        value.destroy()
+    }
+    for (let value of sprites.allOfKind(SpriteKind.Live)) {
+        value.destroy()
+    }
+    for (let value of sprites.allOfKind(SpriteKind.Enemy)) {
+        value.destroy()
+    }
+    for (let value of tiles.getTilesByType(assets.tile`CoinSpawner`)) {
+        Coin2()
+        tiles.placeOnTile(Coin, value)
+        tiles.setTileAt(value, assets.tile`transparency16`)
+    }
+    for (let value of tiles.getTilesByType(assets.tile`Danger`)) {
+        Bee()
+        tiles.placeOnTile(EnemyBee, value)
+        tiles.setTileAt(value, assets.tile`transparency16`)
+        animation.runMovementAnimation(
+        EnemyBee,
+        "c -100 0 100 0 0 0",
+        5000,
+        true
+        )
+        animation.setAction(EnemyBee, ActionKind.Bee)
+    }
+    for (let value of tiles.getTilesByType(assets.tile`HearthSpawn`)) {
+        Hearth2()
+        tiles.placeOnTile(Hearth, value)
+        tiles.setTileAt(value, assets.tile`transparency16`)
+        animation.setAction(Hearth, ActionKind.Hearth)
     }
 }
 controller.player2.onButtonEvent(ControllerButton.Right, ControllerButtonEvent.Released, function () {
@@ -437,8 +478,8 @@ let AnBee: animation.Animation = null
 let EnemyBee: Sprite = null
 let AnCoin: animation.Animation = null
 let Coin: Sprite = null
-let Hero2: Sprite = null
 let DoubleJump2Timeout = 0
+let Hero2: Sprite = null
 let Hero2Active = 0
 let DoubleJump1Timeout = 0
 let DashActivate = 0
@@ -458,9 +499,27 @@ LevelMap = 1
 CoinSpawner()
 info.setLife(3)
 HeartsRemain2Hero = 3
-Score = 10
+Score = 20
 DoubleJump = 1
 DashActivate = 1
+game.onUpdate(function () {
+    if (LevelMap >= 4) {
+        if ((Hero1.isHittingTile(CollisionDirection.Left) || Hero1.isHittingTile(CollisionDirection.Right)) && Hero1.vy >= 0) {
+            Hero1.vy = 0
+            Hero1.ay = 0
+        } else {
+            Hero1.ay = 350
+        }
+        if (Hero2Active == 1) {
+            if ((Hero2.isHittingTile(CollisionDirection.Left) || Hero2.isHittingTile(CollisionDirection.Right)) && Hero2.vy >= 0) {
+                Hero2.vy = 0
+                Hero2.ay = 0
+            } else {
+                Hero2.ay = 350
+            }
+        }
+    }
+})
 forever(function () {
     MovementChecker()
     DoubleJumpMechanics()
