@@ -17,6 +17,7 @@ namespace SpriteKind {
     export const Coin = SpriteKind.create()
     export const ItemDoubleJump = SpriteKind.create()
     export const Live = SpriteKind.create()
+    export const Final = SpriteKind.create()
 }
 function DoubleJumpMechanics () {
     if (LevelMap == 4) {
@@ -38,6 +39,11 @@ function DoubleJumpMechanics () {
         }
     }
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Final, function (sprite, otherSprite) {
+    if (Score == 62) {
+        game.over(true)
+    }
+})
 function Coin2 () {
     Coin = sprites.create(assets.image`CoinUp`, SpriteKind.Coin)
     AnCoin = animation.createAnimation(ActionKind.FloatingCoin, 200)
@@ -89,6 +95,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`RespawnTile`, function (sprit
         Hero2.setPosition(Hero1.x, Hero1.y)
     }
     CoinSpawner()
+    GrandPa()
 })
 function Hero2Appearance () {
     Hero2 = sprites.create(assets.image`Hero2`, SpriteKind.Player)
@@ -186,7 +193,7 @@ controller.left.onEvent(ControllerButtonEvent.Released, function () {
     Hero1.ay = 350
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, location) {
-    if (Score >= 10 && LevelMap == 1) {
+    if (Score == 10 && LevelMap == 1) {
         Hero1.destroy()
         if (Hero2Active == 1) {
             Hero2.destroy()
@@ -206,7 +213,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
         }
         DoubleJump = 1
         CoinSpawner()
-    } else if (Score >= 15 && LevelMap == 2) {
+    } else if (Score == 25 && LevelMap == 2) {
         Hero1.destroy()
         if (Hero2Active == 1) {
             Hero2.destroy()
@@ -216,7 +223,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
         } else if (Hero2Dead == 1) {
             info.changeLifeBy(3)
         }
-        tiles.setTilemap(tilemap`level0`)
+        tiles.setTilemap(tilemap`level3`)
         Lives = 0
         LevelMap += 1
         DashActivate = 1
@@ -226,9 +233,9 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
             Hero2.setPosition(Hero1.x, Hero1.y)
         }
         CoinSpawner()
-    } else if (Score >= 20 && LevelMap == 3) {
+    } else if (Score == 30 && LevelMap == 3) {
         Hero1.destroy()
-        if (Hero2Active == 1) {
+        if (Hero2Active > 1) {
             Hero2.destroy()
         }
         if (Hero2Active == 1) {
@@ -249,7 +256,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
             Hero2.setPosition(Hero1.x, Hero1.y)
         }
         CoinSpawner()
-    } else if (Score >= 25 && LevelMap == 4) {
+    } else if (Score == 36 && LevelMap == 4) {
         info.startCountdown(60)
         Hero1.destroy()
         if (Hero2Active == 1) {
@@ -272,6 +279,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
             Hero2.setPosition(Hero1.x, Hero1.y)
         }
         CoinSpawner()
+        GrandPa()
     }
 })
 info.onCountdownEnd(function () {
@@ -296,6 +304,7 @@ info.onCountdownEnd(function () {
         Hero2.setPosition(Hero1.x, Hero1.y)
     }
     CoinSpawner()
+    GrandPa()
 })
 function Respawn () {
     Hero1Appearance()
@@ -505,6 +514,13 @@ function CoinSpawner () {
         animation.setAction(Hearth, ActionKind.Hearth)
     }
 }
+function GrandPa () {
+    for (let value of tiles.getTilesByType(assets.tile`GrandPa`)) {
+        FinalPerson = sprites.create(assets.image`GrandPa`, SpriteKind.Final)
+        tiles.placeOnTile(FinalPerson, value)
+        tiles.setTileAt(value, assets.tile`transparency16`)
+    }
+}
 controller.player2.onButtonEvent(ControllerButton.Right, ControllerButtonEvent.Released, function () {
     if (Hero2Active == 1) {
         Right2 = 0
@@ -522,6 +538,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
         otherSprite.destroy(effects.fire, 500)
     }
 })
+let FinalPerson: Sprite = null
 let AnHearth: animation.Animation = null
 let Hearth: Sprite = null
 let Idle2: animation.Animation = null
@@ -542,37 +559,34 @@ let Direction1 = 0
 let Left1 = 0
 let Right1 = 0
 let LastVelocity1 = 0
+let DashActivate = 0
 let Dashing1 = false
 let Hero2Dead = 0
 let Hero1Dead = 0
 let AnBee: animation.Animation = null
 let EnemyBee: Sprite = null
+let DoubleJump = 0
 let AnCoin: animation.Animation = null
 let Coin: Sprite = null
+let Score = 0
 let DoubleJump2Timeout = 0
 let Hero2: Sprite = null
 let Hero2Active = 0
 let DoubleJump1Timeout = 0
-let DashActivate = 0
-let DoubleJump = 0
-let Score = 0
 let HeartsRemain2Hero = 0
 let LevelMap = 0
 let Lives = 0
 let Hero1: Sprite = null
 scene.setBackgroundImage(assets.image`Background`)
-tiles.setTilemap(tilemap`level4`)
+tiles.setTilemap(tilemap`level1`)
 Hero1Appearance()
 Hero1Animation()
 scene.cameraFollowSprite(Hero1)
 Lives = 0
-LevelMap = 4
+LevelMap = 1
 CoinSpawner()
 info.setLife(3)
 HeartsRemain2Hero = 3
-Score = 20
-DoubleJump = 1
-DashActivate = 1
 game.onUpdate(function () {
     if (LevelMap >= 4) {
         if ((Hero1.isHittingTile(CollisionDirection.Left) || Hero1.isHittingTile(CollisionDirection.Right)) && Hero1.vy >= 0) {
