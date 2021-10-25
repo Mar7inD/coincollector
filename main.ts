@@ -20,7 +20,7 @@ namespace SpriteKind {
     export const Final = SpriteKind.create()
 }
 function DoubleJumpMechanics () {
-    if (LevelMap == 4) {
+    if (LevelMap >= 4) {
         if (Hero1.isHittingTile(CollisionDirection.Left) || Hero1.isHittingTile(CollisionDirection.Right)) {
             DoubleJump1Timeout = 1
         }
@@ -370,9 +370,18 @@ function Hero2Animation () {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Live, function (sprite, otherSprite) {
     if (Hero2Active == 1) {
         if (info.life() < 6) {
-            info.changeLifeBy(1)
-            otherSprite.destroy()
-            if (sprite == Hero2) {
+            if (Hero2Dead == 0 && Hero2Dead == 0) {
+                info.changeLifeBy(1)
+                otherSprite.destroy()
+                if (sprite == Hero2) {
+                    HeartsRemain2Hero += 1
+                }
+            } else if (Hero2Dead == 1 && info.life() < 3) {
+                if (HeartsRemain2Hero == 0) {
+                    info.changeLifeBy(1)
+                }
+            } else if (Hero1Dead == 1 && info.life() < 3) {
+                info.changeLifeBy(1)
                 HeartsRemain2Hero += 1
             }
         }
