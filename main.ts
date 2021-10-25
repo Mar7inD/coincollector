@@ -25,19 +25,7 @@ function DoubleJumpMechanics () {
         }
         if (Hero2Active == 1) {
             if (Hero2.isHittingTile(CollisionDirection.Left) || Hero2.isHittingTile(CollisionDirection.Right)) {
-                DoubleJump1Timeout = 1
-            }
-        }
-    }
-    if (DoubleJump1Timeout == 3) {
-        if (Hero1.isHittingTile(CollisionDirection.Bottom)) {
-            DoubleJump1Timeout = 0
-        }
-    }
-    if (Hero2Active == 1) {
-        if (DoubleJump2Timeout == 3) {
-            if (Hero2.isHittingTile(CollisionDirection.Bottom)) {
-                DoubleJump2Timeout = 0
+                DoubleJump2Timeout = 1
             }
         }
     }
@@ -163,13 +151,16 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
 controller.player2.onButtonEvent(ControllerButton.Left, ControllerButtonEvent.Released, function () {
     if (Hero2Active == 1) {
         Left2 = 0
+        Hero2.ay = 350
     }
 })
 controller.right.onEvent(ControllerButtonEvent.Released, function () {
     Right1 = 0
+    Hero1.ay = 350
 })
 controller.left.onEvent(ControllerButtonEvent.Released, function () {
     Left1 = 0
+    Hero1.ay = 350
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, location) {
     if (Score >= 10 && LevelMap == 1) {
@@ -392,7 +383,7 @@ function MovementChecker () {
             Hero2.setImage(assets.image`Hero2LeftCatch`)
         } else if (LevelMap >= 4 && (Hero2.isHittingTile(CollisionDirection.Right) && Right2 == 1)) {
             animation.stopAnimation(animation.AnimationTypes.All, Hero2)
-            Hero2.setImage(assets.image`Hero2LeftCatch`)
+            Hero2.setImage(assets.image`Hero2RightCatch`)
         }
     }
 }
@@ -428,6 +419,18 @@ function CoinSpawner () {
         )
         animation.setAction(EnemyBee, ActionKind.Bee)
     }
+    for (let value of tiles.getTilesByType(assets.tile`BeeSpawnerY`)) {
+        Bee()
+        tiles.placeOnTile(EnemyBee, value)
+        tiles.setTileAt(value, assets.tile`transparency16`)
+        animation.runMovementAnimation(
+        EnemyBee,
+        "c 0 -100 0 100 0 0",
+        5000,
+        true
+        )
+        animation.setAction(EnemyBee, ActionKind.Bee)
+    }
     for (let value of tiles.getTilesByType(assets.tile`HearthSpawn`)) {
         Hearth2()
         tiles.placeOnTile(Hearth, value)
@@ -438,6 +441,7 @@ function CoinSpawner () {
 controller.player2.onButtonEvent(ControllerButton.Right, ControllerButtonEvent.Released, function () {
     if (Hero2Active == 1) {
         Right2 = 0
+        Hero2.ay = 350
     }
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
@@ -490,12 +494,12 @@ let LevelMap = 0
 let Lives = 0
 let Hero1: Sprite = null
 scene.setBackgroundImage(assets.image`Background`)
-tiles.setTilemap(tilemap`level1`)
+tiles.setTilemap(tilemap`level4`)
 Hero1Appearance()
 Hero1Animation()
 scene.cameraFollowSprite(Hero1)
 Lives = 0
-LevelMap = 1
+LevelMap = 4
 CoinSpawner()
 info.setLife(3)
 HeartsRemain2Hero = 3
@@ -510,12 +514,18 @@ game.onUpdate(function () {
         } else {
             Hero1.ay = 350
         }
+        if (Hero1.vy <= -165 && (Hero1.isHittingTile(CollisionDirection.Left) || Hero1.isHittingTile(CollisionDirection.Right))) {
+            Hero1.vy = -165
+        }
         if (Hero2Active == 1) {
             if ((Hero2.isHittingTile(CollisionDirection.Left) || Hero2.isHittingTile(CollisionDirection.Right)) && Hero2.vy >= 0) {
                 Hero2.vy = 0
                 Hero2.ay = 0
             } else {
                 Hero2.ay = 350
+            }
+            if (Hero2.vy <= -165 && (Hero2.isHittingTile(CollisionDirection.Left) || Hero2.isHittingTile(CollisionDirection.Right))) {
+                Hero2.vy = -165
             }
         }
     }
