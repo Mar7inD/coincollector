@@ -437,7 +437,30 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Fire`, function (sprite, loca
     }
 })
 info.onLifeZero(function () {
-    game.over(false)
+    if (LevelMap == 5) {
+        info.startCountdown(90)
+        Hero1.destroy()
+        if (Hero2Active == 1) {
+            Hero2.destroy()
+        }
+        if (Hero2Active == 0) {
+            info.setLife(3)
+        } else if (Hero2Active == 1) {
+            info.setLife(6)
+        }
+        tiles.setTilemap(tilemap`LastMap`)
+        Lives = 0
+        Score = 36
+        Respawn()
+        scene.cameraFollowSprite(Hero1)
+        if (Hero2Active == 1) {
+            Hero2.setPosition(Hero1.x, Hero1.y)
+        }
+        CoinSpawner()
+        GrandPa()
+    } else if (LevelMap < 5) {
+        game.over(false)
+    }
 })
 function MovementChecker () {
     if (Right1 == 1) {
@@ -593,7 +616,7 @@ Hero1Appearance()
 Hero1Animation()
 scene.cameraFollowSprite(Hero1)
 Lives = 0
-LevelMap = 4
+LevelMap = 1
 CoinSpawner()
 info.setLife(3)
 HeartsRemain2Hero = 3
