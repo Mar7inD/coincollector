@@ -67,6 +67,29 @@ function Bee () {
     AnBee.addAnimationFrame(assets.image`Bee1`)
     animation.attachAnimation(EnemyBee, AnBee)
 }
+scene.onOverlapTile(SpriteKind.Player, assets.tile`RespawnTile`, function (sprite, location) {
+    info.startCountdown(60)
+    Hero1.destroy()
+    if (Hero2Active == 1) {
+        Hero2.destroy()
+    }
+    if (Hero2Active == 1) {
+        Hero2.destroy()
+    }
+    if (Hero1Dead == 1) {
+        info.changeLifeBy(3)
+    } else if (Hero2Dead == 1) {
+        info.changeLifeBy(3)
+    }
+    tiles.setTilemap(tilemap`LastMap`)
+    Lives = 0
+    Respawn()
+    scene.cameraFollowSprite(Hero1)
+    if (Hero2Active == 1) {
+        Hero2.setPosition(Hero1.x, Hero1.y)
+    }
+    CoinSpawner()
+})
 function Hero2Appearance () {
     Hero2 = sprites.create(assets.image`Hero2`, SpriteKind.Player)
     controller.player2.moveSprite(Hero2, 100, 0)
@@ -226,9 +249,53 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
             Hero2.setPosition(Hero1.x, Hero1.y)
         }
         CoinSpawner()
-    } else if (Score >= 15 && LevelMap == 4) {
-    	
+    } else if (Score >= 25 && LevelMap == 4) {
+        info.startCountdown(60)
+        Hero1.destroy()
+        if (Hero2Active == 1) {
+            Hero2.destroy()
+        }
+        if (Hero2Active == 1) {
+            Hero2.destroy()
+        }
+        if (Hero1Dead == 1) {
+            info.changeLifeBy(3)
+        } else if (Hero2Dead == 1) {
+            info.changeLifeBy(3)
+        }
+        tiles.setTilemap(tilemap`LastMap`)
+        Lives = 0
+        LevelMap += 1
+        Respawn()
+        scene.cameraFollowSprite(Hero1)
+        if (Hero2Active == 1) {
+            Hero2.setPosition(Hero1.x, Hero1.y)
+        }
+        CoinSpawner()
     }
+})
+info.onCountdownEnd(function () {
+    info.startCountdown(60)
+    Hero1.destroy()
+    if (Hero2Active == 1) {
+        Hero2.destroy()
+    }
+    if (Hero2Active == 1) {
+        Hero2.destroy()
+    }
+    if (Hero1Dead == 1) {
+        info.changeLifeBy(3)
+    } else if (Hero2Dead == 1) {
+        info.changeLifeBy(3)
+    }
+    tiles.setTilemap(tilemap`LastMap`)
+    Lives = 0
+    Respawn()
+    scene.cameraFollowSprite(Hero1)
+    if (Hero2Active == 1) {
+        Hero2.setPosition(Hero1.x, Hero1.y)
+    }
+    CoinSpawner()
 })
 function Respawn () {
     Hero1Appearance()
@@ -463,8 +530,6 @@ let AnRight2: animation.Animation = null
 let Idle1: animation.Animation = null
 let AnLeft1: animation.Animation = null
 let AnRight1: animation.Animation = null
-let Hero2Dead = 0
-let Hero1Dead = 0
 let DisableMulti = 0
 let projectile2: Sprite = null
 let Direction2 = 0
@@ -478,6 +543,8 @@ let Left1 = 0
 let Right1 = 0
 let LastVelocity1 = 0
 let Dashing1 = false
+let Hero2Dead = 0
+let Hero1Dead = 0
 let AnBee: animation.Animation = null
 let EnemyBee: Sprite = null
 let AnCoin: animation.Animation = null
