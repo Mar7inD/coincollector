@@ -329,11 +329,13 @@ function Hero1Animation () {
     animation.attachAnimation(Hero1, Idle1)
 }
 controller.player2.onButtonEvent(ControllerButton.Up, ControllerButtonEvent.Pressed, function () {
-    if (DoubleJump == 0 && Hero2.isHittingTile(CollisionDirection.Bottom)) {
-        Hero2.vy += -165
-    } else if (DoubleJump == 1 && DoubleJump2Timeout < 2) {
-        Hero2.vy += -165
-        DoubleJump2Timeout += 1
+    if (Hero2Active == 1) {
+        if (DoubleJump == 0 && Hero2.isHittingTile(CollisionDirection.Bottom)) {
+            Hero2.vy += -165
+        } else if (DoubleJump == 1 && DoubleJump2Timeout < 2) {
+            Hero2.vy += -165
+            DoubleJump2Timeout += 1
+        }
     }
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
