@@ -99,7 +99,7 @@ function Hero2Appearance () {
     Hero2 = sprites.create(assets.image`Hero2`, SpriteKind.Player)
     controller.player2.moveSprite(Hero2, 100, 0)
     if (LevelMap < 4) {
-        Hero2.vy = 350
+        Hero2.ay = 350
     }
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
