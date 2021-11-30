@@ -162,6 +162,7 @@ controller.player2.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Press
     }
 })
 controller.combos.attachCombo("BABA", function () {
+    mapSprite.destroy()
     if (Hero2Active == 0 && DisableMulti == 0) {
         Hero2Appearance()
         Hero2Animation()
@@ -173,6 +174,24 @@ controller.combos.attachCombo("BABA", function () {
         Hero2Active = 0
         info.changeLifeBy(0 - HeartsRemain2Hero)
     }
+    mapSprite = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Player)
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     Left1 = 1
@@ -312,6 +331,24 @@ function Respawn () {
         Hero2Animation()
         Hero2Dead = 0
     }
+    mapSprite = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.mapSp)
 }
 function Minimap () {
     if (controller.B.isPressed() || controller.player2.isPressed(ControllerButton.B)) {
@@ -442,24 +479,6 @@ function Hero1Appearance () {
     if (LevelMap < 4) {
         Hero1.ay = 350
     }
-    mapSprite = sprites.create(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, SpriteKind.mapSp)
 }
 function Hearth2 () {
     Hearth = sprites.create(assets.image`Heart`, SpriteKind.Live)
@@ -639,7 +658,6 @@ let Idle1: animation.Animation = null
 let AnLeft1: animation.Animation = null
 let AnRight1: animation.Animation = null
 let myMinimap: minimap.Minimap = null
-let mapSprite: Sprite = null
 let Hero2Dead = 0
 let Hero1Dead = 0
 let DisableMulti = 0
@@ -666,6 +684,7 @@ let DoubleJump2Timeout = 0
 let Hero2: Sprite = null
 let Hero2Active = 0
 let DoubleJump1Timeout = 0
+let mapSprite: Sprite = null
 let Hero1: Sprite = null
 let HeartsRemain2Hero = 0
 let LevelMap = 0
@@ -680,6 +699,24 @@ HeartsRemain2Hero = 3
 Hero1Appearance()
 Hero1Animation()
 scene.cameraFollowSprite(Hero1)
+mapSprite = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, SpriteKind.mapSp)
 game.onUpdate(function () {
     Minimap()
 })
