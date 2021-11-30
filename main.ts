@@ -717,6 +717,7 @@ mapSprite = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
     `, SpriteKind.mapSp)
+let textSprite = textsprite.create("", 15, 1)
 game.onUpdate(function () {
     Minimap()
 })
@@ -747,4 +748,6 @@ game.onUpdate(function () {
 forever(function () {
     MovementChecker()
     DoubleJumpMechanics()
+    textSprite.setPosition(scene.cameraProperty(CameraProperty.X) + 75, scene.cameraProperty(CameraProperty.Y) - 55)
+    textSprite.setText(convertToText(Score))
 })
