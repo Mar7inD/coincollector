@@ -18,6 +18,7 @@ namespace SpriteKind {
     export const ItemDoubleJump = SpriteKind.create()
     export const Live = SpriteKind.create()
     export const Final = SpriteKind.create()
+    export const mapSp = SpriteKind.create()
 }
 function DoubleJumpMechanics () {
     if (LevelMap >= 4) {
@@ -311,6 +312,42 @@ function Respawn () {
         Hero2Dead = 0
     }
 }
+function Minimap () {
+    if (controller.B.isPressed() || controller.player2.isPressed(ControllerButton.B)) {
+        mapSprite.setPosition(scene.cameraProperty(CameraProperty.X), scene.cameraProperty(CameraProperty.Y))
+        if (LevelMap == 1) {
+            myMinimap = minimap.minimap(MinimapScale.Quarter, 1, 15)
+        } else if (LevelMap > 1 && LevelMap < 4) {
+            myMinimap = minimap.minimap(MinimapScale.Eighth, 1, 15)
+        } else if (LevelMap >= 4) {
+            myMinimap = minimap.minimap(MinimapScale.Sixteenth, 1, 15)
+        }
+        minimap.includeSprite(myMinimap, Hero1)
+        if (Hero2Active == 1) {
+            minimap.includeSprite(myMinimap, Hero2)
+        }
+        mapSprite.setImage(minimap.getImage(myMinimap))
+    } else {
+        mapSprite.setImage(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `)
+    }
+}
 function Hero1Animation () {
     AnRight1 = animation.createAnimation(ActionKind.WalkingRight1, 200)
     AnRight1.addAnimationFrame(assets.image`Hero1Right`)
@@ -582,6 +619,7 @@ let AnRight2: animation.Animation = null
 let Idle1: animation.Animation = null
 let AnLeft1: animation.Animation = null
 let AnRight1: animation.Animation = null
+let myMinimap: minimap.Minimap = null
 let Hero2Dead = 0
 let Hero1Dead = 0
 let DisableMulti = 0
@@ -608,6 +646,7 @@ let DoubleJump2Timeout = 0
 let Hero2: Sprite = null
 let Hero2Active = 0
 let DoubleJump1Timeout = 0
+let mapSprite: Sprite = null
 let HeartsRemain2Hero = 0
 let LevelMap = 0
 let Lives = 0
@@ -622,6 +661,27 @@ LevelMap = 1
 CoinSpawner()
 info.setLife(3)
 HeartsRemain2Hero = 3
+mapSprite = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, SpriteKind.mapSp)
+game.onUpdate(function () {
+    Minimap()
+})
 game.onUpdate(function () {
     if (LevelMap >= 4) {
         if ((Hero1.isHittingTile(CollisionDirection.Left) || Hero1.isHittingTile(CollisionDirection.Right)) && Hero1.vy >= 0) {
