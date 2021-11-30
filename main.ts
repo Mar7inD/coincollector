@@ -205,13 +205,13 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
         tiles.setTilemap(tilemap`level2`)
         Lives = 0
         LevelMap += 1
+        CoinSpawner()
         Respawn()
         scene.cameraFollowSprite(Hero1)
         if (Hero2Active == 1) {
             Hero2.setPosition(Hero1.x, Hero1.y)
         }
         DoubleJump = 1
-        CoinSpawner()
     } else if (Score == 25 && LevelMap == 2) {
         Hero1.destroy()
         if (Hero2Active == 1) {
@@ -226,12 +226,12 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
         Lives = 0
         LevelMap += 1
         DashActivate = 1
+        CoinSpawner()
         Respawn()
         scene.cameraFollowSprite(Hero1)
         if (Hero2Active == 1) {
             Hero2.setPosition(Hero1.x, Hero1.y)
         }
-        CoinSpawner()
     } else if (Score == 30 && LevelMap == 3) {
         Hero1.destroy()
         if (Hero2Active > 1) {
@@ -249,12 +249,12 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
         Lives = 0
         LevelMap += 1
         DashActivate = 1
+        CoinSpawner()
         Respawn()
         scene.cameraFollowSprite(Hero1)
         if (Hero2Active == 1) {
             Hero2.setPosition(Hero1.x, Hero1.y)
         }
-        CoinSpawner()
     } else if (Score == 36 && LevelMap == 4) {
         info.startCountdown(90)
         Hero1.destroy()
@@ -269,13 +269,13 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`Portal`, function (sprite, lo
         tiles.setTilemap(tilemap`LastMap`)
         Lives = 0
         LevelMap += 1
+        CoinSpawner()
+        GrandPa()
         Respawn()
         scene.cameraFollowSprite(Hero1)
         if (Hero2Active == 1) {
             Hero2.setPosition(Hero1.x, Hero1.y)
         }
-        CoinSpawner()
-        GrandPa()
     }
 })
 info.onCountdownEnd(function () {
@@ -301,6 +301,7 @@ info.onCountdownEnd(function () {
     GrandPa()
 })
 function Respawn () {
+    mapSprite.destroy()
     Hero1Appearance()
     Hero1Animation()
     Hero1Dead = 0
@@ -441,6 +442,24 @@ function Hero1Appearance () {
     if (LevelMap < 4) {
         Hero1.ay = 350
     }
+    mapSprite = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.mapSp)
 }
 function Hearth2 () {
     Hearth = sprites.create(assets.image`Heart`, SpriteKind.Live)
@@ -620,6 +639,7 @@ let Idle1: animation.Animation = null
 let AnLeft1: animation.Animation = null
 let AnRight1: animation.Animation = null
 let myMinimap: minimap.Minimap = null
+let mapSprite: Sprite = null
 let Hero2Dead = 0
 let Hero1Dead = 0
 let DisableMulti = 0
@@ -646,39 +666,20 @@ let DoubleJump2Timeout = 0
 let Hero2: Sprite = null
 let Hero2Active = 0
 let DoubleJump1Timeout = 0
-let mapSprite: Sprite = null
+let Hero1: Sprite = null
 let HeartsRemain2Hero = 0
 let LevelMap = 0
 let Lives = 0
-let Hero1: Sprite = null
 scene.setBackgroundImage(assets.image`Background`)
 tiles.setTilemap(tilemap`level1`)
-Hero1Appearance()
-Hero1Animation()
-scene.cameraFollowSprite(Hero1)
 Lives = 0
 LevelMap = 1
 CoinSpawner()
 info.setLife(3)
 HeartsRemain2Hero = 3
-mapSprite = sprites.create(img`
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    `, SpriteKind.mapSp)
+Hero1Appearance()
+Hero1Animation()
+scene.cameraFollowSprite(Hero1)
 game.onUpdate(function () {
     Minimap()
 })
